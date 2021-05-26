@@ -2,8 +2,6 @@
 // 2nd generation w/ better timing, no chars in overscan region
 // 03-19-19 E. Brombaugh
 
-`default_nettype none
-
 module video(
 	input clk,					// 16MHz system clock
 	input clk_2x,				// 32MHz pixel clock
