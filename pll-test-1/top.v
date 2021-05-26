@@ -20,13 +20,16 @@ module ntsc_out_top(
         // PLL instance
         wire clk, clk_2x;
 
-        // Fin=16, FoutA=16, FoutB=32
-        // XXX TODO: Fin here is 12, not 16, need to redo this math!
+        // Fin=12, FoutA=16, FoutB=32
+	//
+	// This .. does lock, but I manually fiddled and it
+	// should /really/ be calculated via the tool to make
+	// sure I get it right.
         SB_PLL40_2F_PAD #(
-                .DIVR(4'b0000),
+                .DIVR(4'b010),
                 .DIVF(7'b0111111),
-                .DIVQ(3'b101),
-                .FILTER_RANGE(3'b001),
+                .DIVQ(3'b011),
+                .FILTER_RANGE(3'b010),
                 .FEEDBACK_PATH("SIMPLE"),
                 .DELAY_ADJUSTMENT_MODE_FEEDBACK("FIXED"),
                 .FDA_FEEDBACK(4'b0000),
