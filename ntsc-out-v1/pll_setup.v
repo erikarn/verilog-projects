@@ -19,11 +19,18 @@ module pll_setup(
 	// This .. does lock, but I manually fiddled and it
 	// should /really/ be calculated via the tool to make
 	// sure I get it right.
-        SB_PLL40_2F_PAD #(
-                .DIVR(4'b010),
-                .DIVF(7'b0111111),
-                .DIVQ(3'b011),
-                .FILTER_RANGE(3'b010),
+	//
+	// DIVR:  0 (4'b0000)
+	// DIVF: 84 (7'b1010100)
+	// DIVQ:  5 (3'b101)
+	//
+	// FILTER_RANGE: 1 (3'b001)
+	//
+        SB_PLL40_2F_CORE #(
+                .DIVR(4'b0000),
+                .DIVF(7'b1010100),
+                .DIVQ(3'b101),
+                .FILTER_RANGE(3'b001),
                 .FEEDBACK_PATH("SIMPLE"),
                 .DELAY_ADJUSTMENT_MODE_FEEDBACK("FIXED"),
                 .FDA_FEEDBACK(4'b0000),
@@ -37,7 +44,7 @@ module pll_setup(
         )
 
         pll_inst (
-                .PACKAGEPIN(clk_12),
+                .REFERENCECLK(clk_12),
                 .PLLOUTCOREA(clk),
                 .PLLOUTGLOBALA(),
                 .PLLOUTCOREB(clk_2x),

@@ -275,13 +275,13 @@ module video(
 	// one pipe delay
 	
 	// Character Generator ROM
-	//wire [10:0] cg_addr = {raw_ram_word[7:0],cline_dly};
-	//wire [7:0] cg_dout;
-	//rom_cg_2kB ucgr(
-	//	.clk(clk_2x),
-	//	.addr(cg_addr),
-	//	.dout(cg_dout)
-	//);
+	wire [10:0] cg_addr = {raw_ram_word[7:0],cline_dly};
+	wire [7:0] cg_dout;
+	rom_cg_2kB ucgr(
+		.clk(clk_2x),
+		.addr(cg_addr),
+		.dout(cg_dout)
+	);
 	
 	// pipeline character color data or hires default
 	reg [7:0] color_idx;
@@ -294,7 +294,7 @@ module video(
 		gfx_dout <= raw_ram_dout;
 	
 	// mux CG or GFX
-	wire [7:0] vdat = mode ? gfx_dout : gfx_dout; //cg_dout;
+	wire [7:0] vdat = mode ? gfx_dout : cg_dout;
 	
 	// two pipes delay
 		
