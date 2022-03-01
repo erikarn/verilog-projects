@@ -5,26 +5,18 @@
 `default_nettype none
 
 module ntsc_out_top(
-       // Reset input
-       input NRST,
-       // Video
-       inout [3:0] vdac,
+	// Reset input
+	input NRST,
+	// Video
+	inout [3:0] vdac,
+	input clk_12,
+	output pll_lock,
+	output reset,
 	output clk,
 	output clk_2x
 );
 
-	wire pll_lock, reset;
 	wire clk_out, clk_2x_out;
-	wire clk_12;
-	//wire clk_2x, clk;
-
-	// Top level internal clock -> 12MHz
-	SB_HFOSC OscInst0(
-		.CLKHFEN(1'b1),
-		.CLKHFPU(1'b1),
-		.CLKHF(clk_12)
-	);
-	defparam OscInst0.CLKHF_DIV = 2'b10; // 48MHz clock / 4 => 12MHz
 
 	// Buffer between clock PLL output and consumers
 	SB_GB clk_out_buffer(
