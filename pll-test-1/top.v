@@ -5,16 +5,20 @@
 `default_nettype none
 
 module ntsc_out_top(
-       // 12MHz oscillator
-       input clk_12,
-       // Reset input
-       input NRST,
-       // Video
-       inout [3:0] vdac,
-       output pll_lock,
-       output reset,
-       output clk,
-       output clk_2x
+	// 12MHz oscillator
+	input clk_12,
+	// Reset input
+	input NRST,
+	// Video
+	inout [3:0] vdac,
+	// PLL lock notification
+	output pll_lock,
+	// System reset
+	output reset,
+	// 16MHz output
+	output clk,
+	// 32MHz output
+	output clk_2x
 );
 
 	// Reset instance
@@ -35,4 +39,3 @@ module ntsc_out_top(
 	);
 
 endmodule
-
