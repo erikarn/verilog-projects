@@ -2,17 +2,17 @@
 // 05-16-18 E. Brombaugh
 
 module vram_32kb(
-    input clk,
-    input we,
-    input [14:0] addr,
-    input [7:0] din,
-    output reg [7:0] dout_byte,
+	input clk,
+	input we,
+	input [14:0] addr,
+	input [7:0] din,
+	output reg [7:0] dout_byte,
 	output [15:0] dout_word
 );
 
 	wire [15:0] data;
-	
-        // instantiate the big RAM
+
+	// instantiate the big RAM
 	SB_SPRAM256KA mem (
 		.ADDRESS(addr[14:1]),
 		.DATAIN({din,din}),
@@ -26,14 +26,15 @@ module vram_32kb(
 		.DATAOUT(data)
 	);
 
+	// pipeline the output select
+	reg hilo_sel;
 
-// pipeline the output select
-    reg hilo_sel;
-    always @(posedge clk)
-        hilo_sel <= addr[0];
-	
+	always @(posedge clk)
+		hilo_sel <= addr[0];
+
 	always @(*)
 		dout_byte = hilo_sel ? data[15:8] : data[7:0];
 	
 	assign dout_word = data;
+
 endmodule
