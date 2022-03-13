@@ -11,9 +11,6 @@ module pll_setup(
 	output clk_2x
 );
 
-	// PLL instance
-	wire clk, clk_2x;
-
 	// Fin=12, FoutA=16, FoutB=32
 	//
 	// This .. does lock, but I manually fiddled and it
