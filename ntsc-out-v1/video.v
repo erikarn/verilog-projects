@@ -11,9 +11,9 @@ module video(
 	input we,					// write enable
 	input [12:0] addr,			// address (8k range)
 	input [7:0] din,			// write data
-	output reg [7:0] ram_dout,	// RAM read data
-	output reg [7:0] ctl_dout,	// control read data
-	inout [3:0] vdac			// video DAC signal
+	output reg [7:0] ram_dout,		// RAM read data
+	output reg [7:0] ctl_dout,		// control read data
+	output reg [3:0] composite		// composite DAC video out
 );
 	// set up timing parameters for 32MHz clock rate
 	localparam MAX_H = 2037;	// 2038 clocks/line
@@ -417,7 +417,6 @@ module video(
 	// add luma/sync to chroma to generate composite
 	reg signed [5:0] yc_sum;
 	wire [3:0] sat_comp;
-	reg [3:0] composite;
 	always @(posedge clk_2x)
 	begin
 		yc_sum <= $signed({1'b0,luma_sync_d2}) + chroma;
@@ -426,23 +425,5 @@ module video(
 	
 	// saturation from 6-bit signed to 4-bit unsigned
 	satsu #(.isz(6),.osz(4)) usat(.in(yc_sum), .out(sat_comp));
-	
-	// video DAC output register & drivers
-	SB_IO #(
-		.PIN_TYPE(6'b101001),
-		.PULLUP(1'b1),
-		.NEG_TRIGGER(1'b0),
-		.IO_STANDARD("SB_LVCMOS")
-	) uvdac[3:0] (
-		.PACKAGE_PIN(vdac),
-		.LATCH_INPUT_VALUE(1'b0),
-		.CLOCK_ENABLE(1'b1),
-		.INPUT_CLK(1'b0),
-		.OUTPUT_CLK(clk_2x),
-		.OUTPUT_ENABLE(1'b1),
-		.D_OUT_0(composite[3:0]),
-		.D_OUT_1(1'b0),
-		.D_IN_0(),
-		.D_IN_1()
-	);
+
 endmodule
