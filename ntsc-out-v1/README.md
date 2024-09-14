@@ -23,3 +23,21 @@ v0 ---- 3.6 kohm ---+
                     +-- ground
                     |
                    GND
+
+Building
+--------
+
+"apio build"
+
+Flashing
+--------
+
+"apio upload"
+
+PLL calculation
+---------------
+
+Clone this: https://github.com/YosysHQ/icestorm/
+
+and build / run icepll to generate the PLL config block!
+
