@@ -3,12 +3,12 @@
 // 03-19-19 E. Brombaugh
 
 module video(
-	input clk,					// 16MHz system clock
+	input clk,				// 16MHz system clock
 	input clk_2x,				// 32MHz pixel clock
 	input reset,				// active high system reset
 	input sel_ram,				// decoded video RAM address
 	input sel_ctl,				// decoded video control address
-	input we,					// write enable
+	input we,				// write enable
 	input [12:0] addr,			// address (8k range)
 	input [7:0] din,			// write data
 	output reg [7:0] ram_dout,		// RAM read data
@@ -345,85 +345,18 @@ module video(
 		luma_sync_d1 <= luma_sync;
 		luma_sync_d2 <= luma_sync_d1;
 	end
-	
-	// chroma oscillator
-	reg [15:0] chroma_nco;
-	reg [3:0] chroma_phs;
-	reg [1:0] gain_d1, gain_d2;
-	reg cb_d1, cb_d2, active_d1, active_d2;
-	reg signed [3:0] chroma_osc, chroma;
-	always @(posedge clk_2x)
-	begin
-		if(reset)
-		begin
-			chroma_nco <= 16'h0000;
-		end
-		else
-		begin
-			// NCO
-			chroma_nco <= chroma_nco + 16'd7331;
-			
-			// phase reference or add in color
-			if(!active_dly)
-				chroma_phs <= chroma_nco[15:12];
-			else
-				chroma_phs <= chroma_nco[15:12] + {phase,1'b0};
-			
-			// simple sine LUT for oscillator
-			case(chroma_phs)
-				4'h0: chroma_osc <= 4'd0;
-				4'h1: chroma_osc <= 4'd3;
-				4'h2: chroma_osc <= 4'd5;
-				4'h3: chroma_osc <= 4'd6;
-				4'h4: chroma_osc <= 4'd7;
-				4'h5: chroma_osc <= 4'd6;
-				4'h6: chroma_osc <= 4'd5;
-				4'h7: chroma_osc <= 4'd3;
-				4'h8: chroma_osc <= 4'd0;
-				4'h9: chroma_osc <= -4'd3;
-				4'ha: chroma_osc <= -4'd5;
-				4'hb: chroma_osc <= -4'd6;
-				4'hc: chroma_osc <= -4'd7;
-				4'hd: chroma_osc <= -4'd6;
-				4'he: chroma_osc <= -4'd5;
-				4'hf: chroma_osc <= -4'd3;
-			endcase
-			
-			// gain piped
-			gain_d1 <= gain;
-			gain_d2 <= gain_d1;
-			
-			// chroma burst piped
-			cb_d1 <= cb_dly;
-			cb_d2 <= cb_d1;
-			
-			// active piped
-			active_d1 <= active_dly;
-			active_d2 <= active_d1;
-			
-			// chroma value
-			if(cb_d2)
-				chroma <= chroma_osc>>>2;	// colorburst
-			else
-			begin
-				if(!active_d2 || (gain_d2 == 2'b00))
-					chroma <= 4'h0;	// no chroma
-				else
-					chroma <= chroma_osc>>>(2'b11-gain);
-			end
-		end
-	end
-	
-	// add luma/sync to chroma to generate composite
-	reg signed [5:0] yc_sum;
-	wire [3:0] sat_comp;
-	always @(posedge clk_2x)
-	begin
-		yc_sum <= $signed({1'b0,luma_sync_d2}) + chroma;
-		composite <= sat_comp;
-	end
-	
-	// saturation from 6-bit signed to 4-bit unsigned
-	satsu #(.isz(6),.osz(4)) usat(.in(yc_sum), .out(sat_comp));
 
+	// chroma oscillator
+
+	chroma_oscillator chroma_oscillator_inst(
+		.clk(clk),
+		.clk_2x(clk_2x),
+		.reset(reset),
+		.active_dly(active_dly),
+		.luma_sync_d2(luma_sync_d2),
+		.gain(gain),
+		.phase(phase),
+		.cb_dly(cb_dly),
+		.composite(composite)
+	);
 endmodule
