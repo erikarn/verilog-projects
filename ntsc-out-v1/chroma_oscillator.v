@@ -5,12 +5,12 @@
 module chroma_oscillator(
 	input clk,				// system clock (16MHz)
 	input clk_2x,				// pixel clock (32MHz)
-	input active_dly,			// active video, 1 pixel clock delay
+	input active_dly,			// active video, 1 clk2x delay
 	input reset,				// system reset,
-	input [3:0] luma_sync_d2,		// luma, 2 pixel clock delay (to line up with chroma)
+	input [3:0] luma_sync_d2,		// luma, 2 clk2x dleay (to line up with chroma)
 	input [1:0] gain,			// chroma gain
 	input [2:0] phase,			// chroma phase
-	input cb_dly,				// chroma burst enable, 1 pixel clock delay
+	input cb_dly,				// chroma burst enable, 1 clk2x delay
 	output reg [3:0] composite		// composite DAC video out
 );
 
