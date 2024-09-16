@@ -16,11 +16,16 @@ module video(
 	output reg [3:0] composite		// composite DAC video out
 );
 	// set up timing parameters for 32MHz clock rate
+
+	// This gives a 32x28 display (from 16 -> 240)
+	// 32x25 display would be BK_BOT=216 (and then you GET a bottom
+	// border, but things aren't centred right.)
+
 	localparam MAX_H = 2037;	// 2038 clocks/line
 	localparam MAX_V = 261;		// 262 lines/frame
 	localparam HS_WID = 149;	// 150 clocks/4.7us H sync pulse
 	localparam BK_TOP = 16;		// Blanking top on line
-	localparam BK_BOT = 240;	// Blanking bottom on line
+	localparam BK_BOT = 216;	// Blanking bottom on line
 	localparam VS_LIN = 248;	// Vsync on line
 	localparam VS_WID = 1887; 	// 1888 clocks/59us V sync pulse
 	localparam ASTART = 371;	// start of active area @ 11.6us
@@ -310,7 +315,7 @@ module video(
 				fore <= color_idx[7:4];
 				back <= color_idx[3:0];
 			end
-			else 
+			else
 				vid_shf_reg <= {vid_shf_reg[6:0],1'b0};
 		end
 		
