@@ -35,14 +35,14 @@ module chroma_oscillator(
 		begin
 			// Edge detect cb_d1 going high; reset the chroma NCO
 			// so it's always in phase with the pixel clock.
-			if ((cb_d1) && (!cb_active))
+			if ((cb_d2) && (!cb_active))
 			begin
 				cb_active <= 1'b1;
 				chroma_nco <= 16'h0000;
 			end
 			// Edge detect cb_d1 going low; clear cb_active and
 			// keep running the chroma NCO.
-			else if ((!cb_d1) && (cb_active))
+			else if ((!cb_d2) && (cb_active))
 			begin
 				cb_active <= 1'b0;
 				// NCO
