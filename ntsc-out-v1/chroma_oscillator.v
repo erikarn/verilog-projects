@@ -14,22 +14,47 @@ module chroma_oscillator(
 	output reg [3:0] composite		// composite DAC video out
 );
 
+	localparam CHROMA_NCO_VAL = 7331;	// NCO for chroma sine wave ((4096/2) * 3.57975MHz)
+	// TODO: make the shift value configurable, it's using chroma_nco[15:12]
+
 	// chroma oscillator
 	reg [15:0] chroma_nco;
 	reg [3:0] chroma_phs;
 	reg [1:0] gain_d1, gain_d2;
 	reg cb_d1, cb_d2, active_d1, active_d2;
+	reg cb_active;
 	reg signed [3:0] chroma_osc, chroma;
 	always @(posedge clk_2x)
 	begin
 		if(reset)
 		begin
 			chroma_nco <= 16'h0000;
+			cb_active <= 1'b0;
 		end
 		else
 		begin
-			// NCO
-			chroma_nco <= chroma_nco + 16'd7331;
+			// Edge detect cb_d1 going high; reset the chroma NCO
+			// so it's always in phase with the pixel clock.
+			if ((cb_d1) && (!cb_active))
+			begin
+				cb_active <= 1'b1;
+				chroma_nco <= 16'h0000;
+			end
+			// Edge detect cb_d1 going low; clear cb_active and
+			// keep running the chroma NCO.
+			else if ((!cb_d1) && (cb_active))
+			begin
+				cb_active <= 1'b0;
+				// NCO
+				chroma_nco <= chroma_nco + CHROMA_NCO_VAL;
+			end
+			else
+			// Normal operation; keep running the chroma NCO.
+			begin
+				// NCO
+				chroma_nco <= chroma_nco + CHROMA_NCO_VAL;
+			end
+
 			
 			// phase reference or add in color
 			if(!active_dly)
