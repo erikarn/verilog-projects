@@ -6,17 +6,18 @@
 
 module ntsc_out_top(
 	// Reset input
-	input NRST,
+	input NRST_IN,
 	// Video
 	inout [3:0] vdac,
 	input clk_12,
-	output pll_lock,
-	output reset,
-	output clk,
-	output clk_2x
 );
 
-	wire clk_out, clk_2x_out;
+	wire clk_out, clk_2x_out;	// PLL block output
+
+	wire clk, clk_2x;		// Global buffers for clock routing
+	wire pll_lock;			// Whether the clock PLL is locked
+	wire reset;			// System wide reset wire, against clk_2x
+	wire NRST;			// SB_IO reset
 
 	// Buffer between clock PLL output and consumers
 	SB_GB clk_out_buffer(
@@ -76,23 +77,43 @@ module ntsc_out_top(
 		.composite(composite)
 	);
 
+	// Reset line input buffer
+	//
+	SB_IO #(
+		.PIN_TYPE(6'b000001),	// [1:0] = 01 = INPUT (simple) [5:2] = PIN_NO_OUTPUT
+		.PULLUP(1'b1),		// 1 = pull-up resistor enabled (default 100k)
+		.NEG_TRIGGER(1'b0),	// Rising or falling edge on flip flop triggers in IO block
+		.IO_STANDARD("SB_LVCMOS")
+	) NRST_IO (
+		.PACKAGE_PIN(NRST_IN),	// which package pin to use!
+		.LATCH_INPUT_VALUE(1'b0), // 1 = hold the last pad value, 0 = input runs freely
+		.CLOCK_ENABLE(1'b1),	// clock common to input / output
+		.INPUT_CLK(clk_2x),	// input clock
+		.OUTPUT_CLK(1'b0),	// output clock
+		.OUTPUT_ENABLE(1'b0),	// output enable - 0 for tri-state
+		.D_OUT_0(1'b0),		// output on rising clock edge
+		.D_OUT_1(1'b0),		// output on falling clock edge
+		.D_IN_0(NRST),		// input on rising clock edge
+		.D_IN_1()		// input on falling clock edge
+	);
+
 	// video DAC output register & drivers
 	SB_IO #(
-		.PIN_TYPE(6'b101001),
-		.PULLUP(1'b1),
-		.NEG_TRIGGER(1'b0),
+		.PIN_TYPE(6'b101001),	// [1:0] = 01 = INPUT (simple) [5:2] = PIN_OUTPUT_TRISTATE
+		.PULLUP(1'b1),		// pull-up resistor enabled (default 100k)
+		.NEG_TRIGGER(1'b0),	// Rising or falling edge on flip flop triggers in IO block
 		.IO_STANDARD("SB_LVCMOS")
 	) uvdac[3:0] (
-		.PACKAGE_PIN(vdac),
-		.LATCH_INPUT_VALUE(1'b0),
-		.CLOCK_ENABLE(1'b1),
-		.INPUT_CLK(1'b0),
-		.OUTPUT_CLK(clk_2x),
-		.OUTPUT_ENABLE(1'b1),
-		.D_OUT_0(composite[3:0]),
-		.D_OUT_1(1'b0),
-		.D_IN_0(),
-		.D_IN_1()
+		.PACKAGE_PIN(vdac),	// which package pin to use!
+		.LATCH_INPUT_VALUE(1'b0), // 1 = hold the last pad value, 0 = input runs freely
+		.CLOCK_ENABLE(1'b1),	// clock common to input / output
+		.INPUT_CLK(1'b0),	// input clock
+		.OUTPUT_CLK(clk_2x),	// output clock
+		.OUTPUT_ENABLE(1'b1),	// output enable - 0 for tri-state
+		.D_OUT_0(composite[3:0]),	// output on rising clock edge
+		.D_OUT_1(1'b0),		// output on falling clock edge
+		.D_IN_0(),		// input on rising clock edge
+		.D_IN_1()		// input on falling clock edge
 	);
 
 endmodule
