@@ -9,7 +9,7 @@ module ntsc_out_top(
 	input NRST_IN,
 	// Video
 	inout [3:0] vdac,
-	input clk_12,
+	input clk_12
 );
 
 	wire clk_out, clk_2x_out;	// PLL block output
