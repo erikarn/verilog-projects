@@ -62,8 +62,10 @@ module chroma_oscillator(
 			end
 
 			
-			// phase reference or add in color
-			if(!active_dly)
+			// chroma burst, phase reference or add in color
+			if (cb_active)
+				chroma_phs <= chroma_nco[15:12];
+			else if(!active_dly)
 				chroma_phs <= chroma_nco[15:12];
 			else
 				chroma_phs <= chroma_nco[15:12] + {phase,1'b0};
