@@ -39,6 +39,12 @@ module chroma_oscillator(
 			begin
 				cb_active <= 1'b1;
 				chroma_nco <= 16'h0000;
+				// Why do I need to start it here so the chroma
+				// burst doesn't have some god awful gap?
+				// It's like it's somehow out of phase, but the
+				// sine wave SHOULD be starting at 0 here.
+				//
+//				chroma_nco <= 16'h8000;
 			end
 			// Edge detect cb_d1 going low; clear cb_active and
 			// keep running the chroma NCO.
