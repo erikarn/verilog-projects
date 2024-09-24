@@ -3,8 +3,8 @@
 // Adrian Chadd, May 2021
 
 module pll_setup(
-	// 12MHz oscillator input
-	input clk_12,
+	// 32MHz oscillator input
+	input clk_32,
 	input reset,
 	output pll_lock,
 	output clk,
@@ -20,10 +20,10 @@ module pll_setup(
 	// should /really/ be calculated via the tool to make
 	// sure I get it right.
 	SB_PLL40_2F_PAD #(
-		.DIVR(4'b010),
-		.DIVF(7'b0111111),
-		.DIVQ(3'b011),
-		.FILTER_RANGE(3'b010),
+		.DIVR(4'b0000),
+		.DIVF(7'b0011111),
+		.DIVQ(3'b101),
+		.FILTER_RANGE(3'b011),
 		.FEEDBACK_PATH("SIMPLE"),
 		.DELAY_ADJUSTMENT_MODE_FEEDBACK("FIXED"),
 		.FDA_FEEDBACK(4'b0000),
@@ -37,7 +37,7 @@ module pll_setup(
 	)
 
 	pll_inst (
-		.PACKAGEPIN(clk_12),
+		.PACKAGEPIN(clk_32),
 		.PLLOUTCOREA(clk),
 		.PLLOUTGLOBALA(),
 		.PLLOUTCOREB(clk_2x),

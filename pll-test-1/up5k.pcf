@@ -3,15 +3,15 @@ set_io --warn-no-port vdac[1] 31
 set_io --warn-no-port vdac[2] 36
 set_io --warn-no-port vdac[3] 34
 
-# This needs to be wired up to J8 (12MHz oscillator output)
+# This needs to be wired up a 32MHz input!
 # Note - it /has/ to be 35!
-set_io --warn-no-port clk_12 35
+set_io --warn-no-port clk_32 35
 
 # External reset input
 set_io --warn-no-port NRST 21
 
 # Debug outputs to watch things
-set_io --warn-no-port pll_lock 18
-set_io --warn-no-port reset 19
-set_io --warn-no-port clk 23
-set_io --warn-no-port clk_2x 25
+# set_io --warn-no-port pll_lock 18
+# set_io --warn-no-port reset 19
+# set_io --warn-no-port clk 23
+# set_io --warn-no-port clk_2x 25

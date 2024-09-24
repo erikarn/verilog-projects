@@ -4,24 +4,19 @@
 
 `default_nettype none
 
-module ntsc_out_top(
-	// 12MHz oscillator
-	input clk_12,
+module top(
+	// 32MHz oscillator
+	input clk_32,
 	// Reset input
 	input NRST,
 	// Video
 	inout [3:0] vdac,
-	// PLL lock notification
-	output pll_lock,
-	// System reset
-	output reset,
-	// 16MHz output
-	output clk,
-	// 32MHz output
-	output clk_2x
 );
 
+	wire clk, clk_2x;
+	wire pll_lock;
 	wire clk_out, clk_2x_out;
+	wire reset;
 
 	// Buffer between clock PLL output and consumers
 	SB_GB clk_out_buffer(
@@ -44,7 +39,7 @@ module ntsc_out_top(
 
 	// PLL instance
 	pll_setup pll_inst(
-		.clk_12(clk_12),
+		.clk_32(clk_32),
 		.reset(reset),
 		.pll_lock(pll_lock),
 		.clk(clk_out),
